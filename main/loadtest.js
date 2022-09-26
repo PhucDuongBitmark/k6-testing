@@ -12,17 +12,16 @@ var status = [];
 export const options = {
     scenarios: {
         contacts: {
-            executor: 'ramping-vus',
-            startVUs: 0,
+            executor: 'per-vu-iterations',
             stages: [
-                { duration: '20s', target: 10 },
-                { duration: '20s', target: 100 },
-                { duration: '20s', target: 200 },
-                { duration: '20s', target: 300 },
-                { duration: '20s', target: 400 },
-                { duration: '20s', target: 500 },
+                { duration: '5s', target: 10 },
+                { duration: '5s', target: 100 },
+                { duration: '5s', target: 200 },
+                // { duration: '20s', target: 300 },
+                // { duration: '20s', target: 400 },
+                // { duration: '20s', target: 500 },
             ],
-            gracefulRampDown: '0s',
+            iterations: 1,
         },
     },
 };
@@ -45,6 +44,9 @@ export default function () {
     console.log("res:", res)
     status.push(res.status)
 
+    check(res, {
+        'is status 200': (r) => r.status === 200,
+    });
 }
 
 export function teardown(data) {
