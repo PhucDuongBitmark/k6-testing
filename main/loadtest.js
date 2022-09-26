@@ -12,25 +12,23 @@ var status = [];
 export const options = {
     scenarios: {
         contacts: {
-            executor: 'per-vu-iterations',
+            executor: 'ramping-vus',
+            startVUs: 0,
             stages: [
-                { duration: '5s', target: 10 },
-                { duration: '5s', target: 100 },
-                { duration: '5s', target: 200 },
-                // { duration: '20s', target: 300 },
-                // { duration: '20s', target: 400 },
-                // { duration: '20s', target: 500 },
+                { duration: '10s', target: 100 },
+                { duration: '10s', target: 200 },
             ],
-            iterations: 1,
+            gracefulRampDown: '0s',
         },
     },
 };
 
 
 export default function () {
-    const url = 'https://indexer.test.autonomy.io/nft/index_owner';
+    var url = 'https://indexer.test.autonomy.io/nft/index_owner';
+    const owner = data[__VU]["document"]["address"];
     const payload = JSON.stringify({
-        owner: data[__VU]["document"]["address"]
+        owner: owner
     });
 
     console.log("vu: ", data[__VU]["document"]["address"])
@@ -40,13 +38,24 @@ export default function () {
         },
     };
 
-    const res = http.post(url, payload, params);
-    console.log("res:", res)
+    var res = http.post(url, payload, params);
+    console.log("res post:", res)
     status.push(res.status)
 
     check(res, {
         'is status 200': (r) => r.status === 200,
     });
+
+    url = "https://indexer.test.autonomy.io/nft?owner="+ owner + "&size=10&offset=0&source"
+    res = http.get(url)
+
+    console.log("res get:", res)
+
+    check(res, {
+        'is status 200': (r) => r.status === 200,
+    });
+
+    console.log("status: ", status)
 }
 
 export function teardown(data) {
