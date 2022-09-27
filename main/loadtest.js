@@ -15,8 +15,9 @@ export const options = {
             executor: 'ramping-vus',
             startVUs: 0,
             stages: [
-                { duration: '10s', target: 100 },
-                { duration: '10s', target: 200 },
+                { duration: '2', target: 300 },
+                { duration: '2s', target: 500 },
+                { duration: '2s', target: 500 },
             ],
             gracefulRampDown: '0s',
         },
@@ -25,6 +26,7 @@ export const options = {
 
 
 export default function () {
+    // POST NFTs
     var url = 'https://indexer.test.autonomy.io/nft/index_owner';
     const owner = data[__VU]["document"]["address"];
     const payload = JSON.stringify({
@@ -46,16 +48,18 @@ export default function () {
         'is status 200': (r) => r.status === 200,
     });
 
+    // get NFTs
     url = "https://indexer.test.autonomy.io/nft?owner="+ owner + "&size=10&offset=0&source"
     res = http.get(url)
 
     console.log("res get:", res)
 
     check(res, {
-        'is status 200': (r) => r.status === 200,
+        'is status 200-2': (r) => r.status === 200,
     });
 
     console.log("status: ", status)
+    sleep(1);
 }
 
 export function teardown(data) {
